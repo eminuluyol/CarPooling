@@ -1,7 +1,5 @@
 package com.taurus.carpooling.splash;
 
-import android.util.Log;
-
 import com.taurus.carpooling.core.BasePresenter;
 import com.taurus.carpooling.core.injection.Injector;
 import com.taurus.carpooling.network.model.BaseRequest;
@@ -64,8 +62,12 @@ public class SplashPresenter extends BasePresenter<SplashView> {
 
         onProgressBarHide();
 
-        Log.i("Size", "" + placeMarkers.size());
+        onPlaceMarkerActivityRequested(placeMarkers);
 
+    }
+
+    private void onPlaceMarkerActivityRequested(List<PlaceMarkerDatabaseModel> placeMarkers) {
+        getNavigator().toPlaceMarkerActivity(placeMarkers).clearBackStack().navigate();
     }
 
 
