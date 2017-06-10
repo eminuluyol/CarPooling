@@ -61,7 +61,6 @@ public class SplashPresenter extends BasePresenter<SplashView> {
     private void handleDBResponse(List<PlaceMarkerDatabaseModel> placeMarkers) {
 
         onProgressBarHide();
-
         onPlaceMarkerActivityRequested(placeMarkers);
 
     }

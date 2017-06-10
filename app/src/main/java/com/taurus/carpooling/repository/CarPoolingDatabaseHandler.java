@@ -111,6 +111,7 @@ public class CarPoolingDatabaseHandler extends SQLiteOpenHelper {
     }
 
     private void addAllItems(List<PlaceMarkerDatabaseModel> placeMarkers) {
+
         SQLiteDatabase db = this.getWritableDatabase();
 
         for (int i = 0; i < placeMarkers.size(); i++) {
@@ -132,6 +133,7 @@ public class CarPoolingDatabaseHandler extends SQLiteOpenHelper {
         }
 
         db.close();
+
     }
 
     public List<PlaceMarkerDatabaseModel> getAllPlaceMarkers() {
@@ -156,9 +158,9 @@ public class CarPoolingDatabaseHandler extends SQLiteOpenHelper {
                 placeMarker.setEngineType(cursor.getString(3));
                 placeMarker.setExterior(cursor.getString(4));
                 placeMarker.setFuel(Integer.parseInt(cursor.getString(5)));
-                placeMarker.setInterior(cursor.getString(5));
-                placeMarker.setName(cursor.getString(6));
-                placeMarker.setVin(cursor.getString(7));
+                placeMarker.setInterior(cursor.getString(6));
+                placeMarker.setName(cursor.getString(7));
+                placeMarker.setVin(cursor.getString(8));
 
                 placeMarkers.add(placeMarker);
 
