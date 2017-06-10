@@ -5,11 +5,11 @@ import android.util.Log;
 import com.taurus.carpooling.core.BasePresenter;
 import com.taurus.carpooling.core.injection.Injector;
 import com.taurus.carpooling.network.model.BaseRequest;
-import com.taurus.carpooling.network.model.placemarker.PlaceMarksWrapper;
-import com.taurus.carpooling.network.model.placemarker.Placemark;
+import com.taurus.carpooling.repository.model.PlaceMarkerDatabaseModel;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
@@ -42,22 +42,36 @@ public class SplashPresenter extends BasePresenter<SplashView> {
         compositeDisposable.add(getApi().getCarFeeds(request)
                 .subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread())
+                .map(PlaceMarkerDatabaseModel::createList)
                 .subscribe(this::handleResponse, this::handleError));
 
     }
 
-    private void handleResponse(PlaceMarksWrapper placeMarksWrappers) {
+    private void handleResponse(List<PlaceMarkerDatabaseModel> placeMarkers) {
 
-        List<Placemark> wrapper = placeMarksWrappers.getPlacemarks();
+        if(placeMarkers.size() > 0) {
 
-        Log.i("Size", wrapper.size() + "");
+            compositeDisposable.add(Observable.fromCallable(() -> getDatabaseHandler().addAllPlaceMarkers(placeMarkers))
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(this::handleDBResponse, this::handleError));
 
-
+        }
 
     }
 
+    private void handleDBResponse(List<PlaceMarkerDatabaseModel> placeMarkers) {
+
+        onProgressBarHide();
+
+        Log.i("Size", "" + placeMarkers.size());
+
+    }
+
+
     private void handleError(Throwable throwable) {
 
+        onProgressBarHide();
 
     }
 

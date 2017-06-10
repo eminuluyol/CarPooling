@@ -3,6 +3,7 @@ package com.taurus.carpooling.repository;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -92,34 +93,45 @@ public class CarPoolingDatabaseHandler extends SQLiteOpenHelper {
 
     }
 
-    public void addAllPlaceMarkers(List<PlaceMarkerDatabaseModel> placeMarkers) {
+    public List<PlaceMarkerDatabaseModel> addAllPlaceMarkers(List<PlaceMarkerDatabaseModel> placeMarkers) {
 
         if (getPlaceMarkerCount() == 0) {
 
-            SQLiteDatabase db = this.getWritableDatabase();
+            addAllItems(placeMarkers);
 
-            for (int i = 0; i < placeMarkers.size(); i++) {
+        } else {
 
-                ContentValues values = new ContentValues();
-
-                values.put(KEY_ADDRESS, placeMarkers.get(i).getAddress());
-                values.put(KEY_LONGITUDE, placeMarkers.get(i).getLongitude());
-                values.put(KEY_LATITUDE, placeMarkers.get(i).getLatitude());
-                values.put(KEY_ENGINE_TYPE, placeMarkers.get(i).getEngineType());
-                values.put(KEY_EXTERIOR, placeMarkers.get(i).getExterior());
-                values.put(KEY_FUEL, placeMarkers.get(i).getFuel());
-                values.put(KEY_INTERIOR, placeMarkers.get(i).getInterior());
-                values.put(KEY_NAME, placeMarkers.get(i).getName());
-                values.put(KEY_VIN, placeMarkers.get(i).getVin());
-
-                db.insert(TABLE_PLACE_MARKERS, null, values);
-
-            }
-
-            db.close();
+            removeAll();
+            addAllItems(placeMarkers);
 
         }
 
+        return getAllPlaceMarkers();
+
+    }
+
+    private void addAllItems(List<PlaceMarkerDatabaseModel> placeMarkers) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        for (int i = 0; i < placeMarkers.size(); i++) {
+
+            ContentValues values = new ContentValues();
+
+            values.put(KEY_ADDRESS, placeMarkers.get(i).getAddress());
+            values.put(KEY_LONGITUDE, placeMarkers.get(i).getLongitude());
+            values.put(KEY_LATITUDE, placeMarkers.get(i).getLatitude());
+            values.put(KEY_ENGINE_TYPE, placeMarkers.get(i).getEngineType());
+            values.put(KEY_EXTERIOR, placeMarkers.get(i).getExterior());
+            values.put(KEY_FUEL, placeMarkers.get(i).getFuel());
+            values.put(KEY_INTERIOR, placeMarkers.get(i).getInterior());
+            values.put(KEY_NAME, placeMarkers.get(i).getName());
+            values.put(KEY_VIN, placeMarkers.get(i).getVin());
+
+            db.insert(TABLE_PLACE_MARKERS, null, values);
+
+        }
+
+        db.close();
     }
 
     public List<PlaceMarkerDatabaseModel> getAllPlaceMarkers() {
@@ -171,6 +183,16 @@ public class CarPoolingDatabaseHandler extends SQLiteOpenHelper {
         cursor.close();
 
         return cursor.getCount();
+
+    }
+
+    public void removeAll () throws SQLException {
+
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        db.delete(TABLE_PLACE_MARKERS, null, null);
+
+        db.close ();
 
     }
 

@@ -1,5 +1,11 @@
 package com.taurus.carpooling.repository.model;
 
+import com.taurus.carpooling.network.model.placemarker.PlaceMarksWrapper;
+import com.taurus.carpooling.network.model.placemarker.Placemark;
+import com.taurus.carpooling.util.ListConverter;
+
+import java.util.List;
+
 public class PlaceMarkerDatabaseModel {
 
     private String address;
@@ -91,4 +97,26 @@ public class PlaceMarkerDatabaseModel {
     public void setVin(String vin) {
         this.vin = vin;
     }
+
+    public static List<PlaceMarkerDatabaseModel> createList(PlaceMarksWrapper placeMarksWrappers) {
+        return ListConverter.convert(placeMarksWrappers.getPlacemarks(), item -> create(item));
+    }
+
+    private static PlaceMarkerDatabaseModel create(Placemark item) {
+
+        final PlaceMarkerDatabaseModel model = new PlaceMarkerDatabaseModel();
+
+        model.setAddress(item.getAddress());
+        model.setLongitude(String.valueOf(item.getCoordinates().get(0)));
+        model.setLatitude(String.valueOf(item.getCoordinates().get(1)));
+        model.setEngineType(item.getEngineType());
+        model.setExterior(item.getExterior());
+        model.setFuel(item.getFuel());
+        model.setInterior(item.getInterior());
+        model.setName(item.getName());
+        model.setVin(item.getVin());
+
+        return model;
+    }
+
 }
