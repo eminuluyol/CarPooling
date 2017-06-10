@@ -1,5 +1,6 @@
 package com.taurus.carpooling.core;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
 import android.support.annotation.IdRes;
@@ -15,11 +16,14 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 import com.taurus.carpooling.R;
 import com.taurus.carpooling.core.dialog.ProgressDialogFragment;
+import com.taurus.carpooling.core.dialog.ProgressDialogFragmentBuilder;
 import com.taurus.carpooling.core.injection.Injector;
 
 import butterknife.BindView;
@@ -235,6 +239,18 @@ public abstract class BaseActivity<V extends BaseView, P extends BasePresenter<V
     private void navigateUp() {
         NavUtils.navigateUpFromSameTask(this);
         overridePendingTransition(R.anim.left_in, R.anim.right_out);
+    }
+
+    protected void setupStatusBar() {
+
+        Window window = getWindow();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(ContextCompat.getColor(this, R.color.transparent));
+        }
+
     }
 
     @Override

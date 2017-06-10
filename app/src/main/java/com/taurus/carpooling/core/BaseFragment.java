@@ -13,6 +13,8 @@ import android.view.ViewGroup;
 import com.hannesdorfmann.fragmentargs.FragmentArgs;
 import com.hannesdorfmann.mosby.mvp.MvpFragment;
 import com.taurus.carpooling.R;
+import com.taurus.carpooling.core.dialog.ProgressDialogFragment;
+import com.taurus.carpooling.core.dialog.ProgressDialogFragmentBuilder;
 
 import butterknife.ButterKnife;
 

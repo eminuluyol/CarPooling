@@ -2,7 +2,7 @@ package com.taurus.carpooling.core.injection;
 
 import android.support.v7.app.AppCompatActivity;
 
-import com.taurus.carpooling.util.Navigator;
+import com.taurus.carpooling.util.navigator.Navigator;
 
 import dagger.Module;
 import dagger.Provides;

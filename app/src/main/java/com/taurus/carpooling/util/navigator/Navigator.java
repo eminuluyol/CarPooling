@@ -1,9 +1,8 @@
-package com.taurus.carpooling.util;
+package com.taurus.carpooling.util.navigator;
 
 import android.app.Activity;
-import android.content.Intent;
-import android.net.Uri;
-import android.provider.Settings;
+
+import com.taurus.carpooling.core.injection.ActivityScope;
 
 @ActivityScope
 public class Navigator {

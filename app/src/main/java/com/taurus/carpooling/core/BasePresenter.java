@@ -1,6 +1,7 @@
 package com.taurus.carpooling.core;
 
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
+import com.taurus.carpooling.util.navigator.Navigator;
 
 import javax.inject.Inject;
 
