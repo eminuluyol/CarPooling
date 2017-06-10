@@ -2,6 +2,8 @@ package com.taurus.carpooling.core.injection;
 
 import android.app.Application;
 
+import com.taurus.carpooling.network.retrofit.RetrofitCarPoolingApi;
+
 import javax.inject.Singleton;
 
 import dagger.Module;
@@ -20,6 +22,12 @@ public class ApplicationModule {
     @Singleton
     public Application provideApplication() {
         return application;
+    }
+
+    @Provides
+    @Singleton
+    public RetrofitCarPoolingApi provideCarPoolingApi() {
+        return new RetrofitCarPoolingApi();
     }
 
 }

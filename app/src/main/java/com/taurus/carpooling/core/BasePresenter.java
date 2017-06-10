@@ -1,6 +1,7 @@
 package com.taurus.carpooling.core;
 
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
+import com.taurus.carpooling.network.retrofit.RetrofitCarPoolingApi;
 import com.taurus.carpooling.util.navigator.Navigator;
 
 import javax.inject.Inject;
@@ -12,6 +13,9 @@ public abstract class BasePresenter<V extends BaseView> extends MvpBasePresenter
     @Inject
     Navigator navigator;
 
+    @Inject
+    RetrofitCarPoolingApi api;
+
     protected CompositeDisposable compositeDisposable;
 
     public BasePresenter(){
@@ -20,6 +24,10 @@ public abstract class BasePresenter<V extends BaseView> extends MvpBasePresenter
 
     public Navigator getNavigator() {
         return navigator;
+    }
+
+    public RetrofitCarPoolingApi getApi() {
+        return api;
     }
 
     public void clearCompositeDisposable() {

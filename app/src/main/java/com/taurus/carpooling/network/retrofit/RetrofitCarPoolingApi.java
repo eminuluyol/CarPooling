@@ -4,18 +4,15 @@ import com.taurus.carpooling.network.CarPoolingApi;
 import com.taurus.carpooling.network.model.BaseRequest;
 import com.taurus.carpooling.network.model.placemarker.PlaceMarksWrapper;
 
-import java.util.List;
-
 import io.reactivex.Observable;
 
 public class RetrofitCarPoolingApi implements CarPoolingApi {
 
     @Override
-    public Observable<List<PlaceMarksWrapper>> getCarFeeds(BaseRequest request) {
+    public Observable<PlaceMarksWrapper> getCarFeeds(BaseRequest request) {
 
-        APIRestEndpoints endpoints = APIRestClient.getInstanceRx().create(APIRestEndpoints.class);
+        CarPoolingService endpoints = APIRestClient.getInstanceRx().create(CarPoolingService.class);
         return endpoints.getCarFeeds();
 
     }
-
 }

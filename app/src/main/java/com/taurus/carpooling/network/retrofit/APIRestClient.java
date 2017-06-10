@@ -13,7 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class APIRestClient {
 
-    private static final String BASE_URL = "https://s3-us-west-2.amazonaws.com/wunderbucket/locations.json";
+    private static final String BASE_URL = "https://s3-us-west-2.amazonaws.com";
     private static final int CONNECT_TIME_OUT = 10;
     private static final int READ_TIME_OUT = 15;
 
