@@ -19,6 +19,8 @@ import android.widget.TextView;
 
 import com.hannesdorfmann.mosby.mvp.MvpActivity;
 import com.taurus.carpooling.R;
+import com.taurus.carpooling.core.dialog.ProgressDialogFragment;
+import com.taurus.carpooling.core.injection.Injector;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
