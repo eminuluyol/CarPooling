@@ -1,5 +1,11 @@
 package com.taurus.carpooling.core;
 
+import android.annotation.TargetApi;
+import android.content.Intent;
+import android.content.pm.ShortcutInfo;
+import android.content.pm.ShortcutManager;
+import android.graphics.drawable.Icon;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.CallSuper;
@@ -26,6 +32,8 @@ import com.taurus.carpooling.core.dialog.ProgressDialogFragment;
 import com.taurus.carpooling.core.dialog.ProgressDialogFragmentBuilder;
 import com.taurus.carpooling.core.injection.Injector;
 
+import java.util.Arrays;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
@@ -33,6 +41,7 @@ public abstract class BaseActivity<V extends BaseView, P extends BasePresenter<V
         implements BaseView {
 
     private static final String TAG_PROGRESS_DIALOG = "PROGRESS_DIALOG";
+    private static final String SHORTCUT_ID = "shortcut_web";
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -70,6 +79,12 @@ public abstract class BaseActivity<V extends BaseView, P extends BasePresenter<V
         }
 
         progressDialogFragment = new ProgressDialogFragmentBuilder().build();
+
+        if (Build.VERSION.SDK_INT >= 25) {
+            createShortcut();
+        }else{
+            removeShortcut();
+        }
 
     }
 
@@ -286,8 +301,30 @@ public abstract class BaseActivity<V extends BaseView, P extends BasePresenter<V
 
     @Override
     public void dismissProgress() {
-        if(progressDialogFragment == null) return;;
+        if(progressDialogFragment == null) return;
         progressDialogFragment.dismissAllowingStateLoss();
+    }
+
+    @TargetApi(25)
+    private void createShortcut() {
+
+        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+
+        ShortcutInfo shortcut = new ShortcutInfo.Builder(this, SHORTCUT_ID)
+                .setShortLabel("eminuluyol.com")
+                .setLongLabel("Go to my website")
+                .setIcon(Icon.createWithResource(getApplicationContext(), R.mipmap.ic_launcher))
+                .setIntent(new Intent(Intent.ACTION_VIEW, Uri.parse("https://www.eminuluyol.com")))
+                .build();
+
+        shortcutManager.setDynamicShortcuts(Arrays.asList(shortcut));
+    }
+
+    @TargetApi(25)
+    private void removeShortcut() {
+        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
+        shortcutManager.disableShortcuts(Arrays.asList(SHORTCUT_ID));
+        shortcutManager.removeAllDynamicShortcuts();
     }
 
 }
