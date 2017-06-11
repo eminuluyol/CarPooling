@@ -8,6 +8,9 @@ import io.reactivex.Observable;
 
 public class RetrofitCarPoolingApi implements CarPoolingApi {
 
+    public RetrofitCarPoolingApi() {
+    }
+
     @Override
     public Observable<PlaceMarksWrapper> getCarFeeds(BaseRequest request) {
 

@@ -39,15 +39,21 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps">
+        <receiver android:name=".widget.CarpoolingWidgetProvider">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <!-- To receive broadcast with this string name -->
+                <action android:name="com.taurus.carpooling.widget.DATA_FETCHED" />
             </intent-filter>
-        </activity>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/carpooling_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".widget.CarpoolingWidgetService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
     </application>
 

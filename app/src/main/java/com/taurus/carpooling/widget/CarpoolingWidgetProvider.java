@@ -3,12 +3,16 @@ package com.taurus.carpooling.widget;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
+import android.view.View;
 import android.widget.RemoteViews;
 
 import com.taurus.carpooling.R;
+import com.taurus.carpooling.util.SharedPreferenceHelper;
 
 public class CarpoolingWidgetProvider extends AppWidgetProvider {
 
@@ -59,6 +63,56 @@ public class CarpoolingWidgetProvider extends AppWidgetProvider {
 
         return remoteViews;
 
+    }
+
+    /**
+     * It receives the broadcast as per the action set on intent filters on
+     * Manifest.xml once data is fetched from RemotePostService,it sends
+     * broadcast and WidgetProvider notifies to change the data the data change
+     * right now happens on ListViewRemoteViewsFactory as it takes RemoteFetchService
+     * listItemList as data
+     */
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        super.onReceive(context, intent);
+
+        if (intent.getAction().equals(DATA_FETCHED)) {
+
+            int appWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            RemoteViews remoteViews = updateWidgetListView(context, appWidgetId);
+            appWidgetManager.updateAppWidget(appWidgetId, remoteViews);
+
+        } else if(intent.getAction().equals(DATA_REFRESHED)) {
+
+            SharedPreferenceHelper sharedPreferenceHelper = new SharedPreferenceHelper(context);
+            sharedPreferenceHelper.putBoolean(SharedPreferenceHelper.DATA_REFRESHED, true);
+
+            RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.carpooling_widget_layout);
+            remoteViews.setViewVisibility(R.id.widgetImageViewRefresh, View.INVISIBLE);
+            remoteViews.setViewVisibility(R.id.widgetProgressBar, View.VISIBLE);
+
+            ComponentName componentName = new ComponentName(context, CarpoolingWidgetProvider.class);
+            AppWidgetManager.getInstance(context).updateAppWidget(componentName, remoteViews);
+
+        }
+
+        ComponentName componentName = new ComponentName(context, CarpoolingWidgetProvider.class);
+        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+        int[] ids = appWidgetManager.getAppWidgetIds(componentName);
+
+        appWidgetManager.notifyAppWidgetViewDataChanged(ids, R.id.listViewWidget);
+
+    }
+
+    @Override
+    public void onAppWidgetOptionsChanged(Context context, AppWidgetManager appWidgetManager, int appWidgetId, Bundle newOptions) {
+
+        SharedPreferenceHelper sharedPreferenceHelper = new SharedPreferenceHelper(context);
+        sharedPreferenceHelper.putBoolean(SharedPreferenceHelper.DATA_REFRESHED, true);
+
+        super.onAppWidgetOptionsChanged(context, appWidgetManager, appWidgetId, newOptions);
     }
 
 }
