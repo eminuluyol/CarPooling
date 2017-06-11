@@ -1,6 +1,8 @@
 package com.taurus.carpooling.placemarker;
 
 import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -8,14 +10,23 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.taurus.carpooling.R;
 import com.taurus.carpooling.baseadapter.RecyclerAdapter;
@@ -23,6 +34,7 @@ import com.taurus.carpooling.baseadapter.model.GenericItem;
 import com.taurus.carpooling.core.BaseFragment;
 import com.taurus.carpooling.placemarker.adapter.PlaceMarkerAdapterDelegate;
 import com.taurus.carpooling.placemarker.adapter.PlaceMarkerUIModel;
+import com.taurus.carpooling.placemarker.listener.MyOnMapReadyCallback;
 import com.taurus.carpooling.repository.model.PlaceMarkerDatabaseModel;
 
 import java.util.ArrayList;
@@ -31,12 +43,15 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
+import static com.taurus.carpooling.R.id.map;
+
 public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMarkerPresenter>
         implements PlaceMarkerView, SlidingUpPanelLayout.PanelSlideListener {
 
     private static final String EXTRA_PLACE_MARKER = "place_marker";
 
     private List<PlaceMarkerDatabaseModel> placeMarkers;
+    private List<PlaceMarkerUIModel> placeMarkerUIList;
     private RecyclerAdapter placeMarkerAdapter;
 
     @BindView(R.id.placeMarkerRecyclerView)
@@ -82,6 +97,7 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
 
         if (placeMarkers != null && !placeMarkers.isEmpty()) {
 
+            placeMarkerUIList = new ArrayList<>(PlaceMarkerUIModel.createList(placeMarkers));
             List<GenericItem> placeMarkerList = new ArrayList<>(PlaceMarkerUIModel.createList(placeMarkers));
 
             placeMarkerRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
@@ -93,7 +109,7 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
             getPresenter().showEmptyView();
         }
 
-        getPresenter().onGoogleServiceAvailability(getContext());
+        getPresenter().checkGoogleServiceAvailability();
 
     }
 
@@ -138,7 +154,8 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
     }
 
     @Override
-    public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+    public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState,
+                                    SlidingUpPanelLayout.PanelState newState) {
 
         if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
             buttonOpenMap.setImageResource(R.drawable.ic_map);
@@ -170,12 +187,77 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
     public void showMap() {
 
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(map);
 
         if (supportMapFragment == null) {
             supportMapFragment = SupportMapFragment.newInstance();
-            fm.beginTransaction().replace(R.id.map, supportMapFragment).commit();
+            fm.beginTransaction().replace(map, supportMapFragment).commit();
         }
 
+        supportMapFragment.getMapAsync(new MyOnMapReadyCallback(placeMarkerUIList) {
+            @Override
+            public void onMapReadyShops(GoogleMap googleMap, List<PlaceMarkerUIModel> placeMarkerList) {
+                drawPlaceMarkersInMap(googleMap, placeMarkerList);
+            }
+        });
+
+    }
+
+    private void drawPlaceMarkersInMap(GoogleMap googleMap, List<PlaceMarkerUIModel> placeMarkerList) {
+
+        // Add a marker in Map
+        for (PlaceMarkerUIModel marker : placeMarkerList) {
+
+            LatLng place = new LatLng(marker.getLatitude(), marker.getLongitude());
+            googleMap.addMarker(new MarkerOptions().position(place)
+                    .title(marker.getName())
+                    .snippet(marker.getAddress())
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location)));
+        }
+
+        // move the camera
+        if (!placeMarkerList.isEmpty()) {
+            PlaceMarkerUIModel item = placeMarkerList.get(0);
+            LatLng firstPlace = new LatLng(item.getLatitude(), item.getLongitude());
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(firstPlace, 11.1f));
+        }
+
+        setInfoWindowAdapter(googleMap);
+
+
+    }
+
+    private void setInfoWindowAdapter(GoogleMap googleMap) {
+        googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+
+            @Override
+            public View getInfoWindow(Marker arg0) {
+                return null;
+            }
+
+            @Override
+            public View getInfoContents(Marker marker) {
+
+                LinearLayout info = new LinearLayout(getContext());
+                info.setOrientation(LinearLayout.VERTICAL);
+
+                TextView title = new TextView(getContext());
+                title.setTextColor(Color.BLACK);
+                title.setGravity(Gravity.CENTER);
+                title.setTypeface(null, Typeface.BOLD);
+                title.setText(marker.getTitle());
+
+                TextView snippet = new TextView(getContext());
+                int padding = (int)getContext().getResources().getDimension(R.dimen.space_small);
+                snippet.setPadding(padding, 0, padding, 0);
+                snippet.setTextColor(Color.GRAY);
+                snippet.setText(marker.getSnippet());
+
+                info.addView(title);
+                info.addView(snippet);
+
+                return info;
+            }
+        });
     }
 }

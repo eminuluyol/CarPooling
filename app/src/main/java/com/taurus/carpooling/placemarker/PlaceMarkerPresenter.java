@@ -1,7 +1,5 @@
 package com.taurus.carpooling.placemarker;
 
-import android.content.Context;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.taurus.carpooling.core.BasePresenter;
@@ -27,10 +25,10 @@ public class PlaceMarkerPresenter extends BasePresenter<PlaceMarkerView> {
         }
     }
 
-    void onGoogleServiceAvailability(Context context) {
+    void checkGoogleServiceAvailability() {
 
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int isAvailable = apiAvailability.isGooglePlayServicesAvailable(context);
+        int isAvailable = apiAvailability.isGooglePlayServicesAvailable(getApplication());
 
         if(isAvailable == ConnectionResult.SUCCESS){
 

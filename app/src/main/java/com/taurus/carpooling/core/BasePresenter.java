@@ -1,5 +1,7 @@
 package com.taurus.carpooling.core;
 
+import android.app.Application;
+
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 import com.taurus.carpooling.network.retrofit.RetrofitCarPoolingApi;
 import com.taurus.carpooling.repository.CarPoolingDatabaseHandler;
@@ -11,6 +13,9 @@ import javax.inject.Inject;
 import io.reactivex.disposables.CompositeDisposable;
 
 public abstract class BasePresenter<V extends BaseView> extends MvpBasePresenter<V> {
+
+    @Inject
+    Application application;
 
     @Inject
     Navigator navigator;
@@ -28,6 +33,10 @@ public abstract class BasePresenter<V extends BaseView> extends MvpBasePresenter
 
     public BasePresenter(){
         compositeDisposable = new CompositeDisposable();
+    }
+
+    public Application getApplication() {
+        return application;
     }
 
     public Navigator getNavigator() {
