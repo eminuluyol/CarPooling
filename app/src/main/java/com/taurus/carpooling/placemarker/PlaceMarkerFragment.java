@@ -34,6 +34,7 @@ import com.taurus.carpooling.baseadapter.model.GenericItem;
 import com.taurus.carpooling.core.BaseFragment;
 import com.taurus.carpooling.placemarker.adapter.PlaceMarkerAdapterDelegate;
 import com.taurus.carpooling.placemarker.adapter.PlaceMarkerUIModel;
+import com.taurus.carpooling.placemarker.listener.MyMarkerClickListener;
 import com.taurus.carpooling.placemarker.listener.MyOnMapReadyCallback;
 import com.taurus.carpooling.repository.model.PlaceMarkerDatabaseModel;
 
@@ -196,14 +197,14 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
 
         supportMapFragment.getMapAsync(new MyOnMapReadyCallback(placeMarkerUIList) {
             @Override
-            public void onMapReadyShops(GoogleMap googleMap, List<PlaceMarkerUIModel> placeMarkerList) {
-                drawPlaceMarkersInMap(googleMap, placeMarkerList);
+            public void onMapReadyMarkers(GoogleMap googleMap, List<PlaceMarkerUIModel> placeMarkerList) {
+                drawPlaceMarkersOnMap(googleMap, placeMarkerList);
             }
         });
 
     }
 
-    private void drawPlaceMarkersInMap(GoogleMap googleMap, List<PlaceMarkerUIModel> placeMarkerList) {
+    private void drawPlaceMarkersOnMap(GoogleMap googleMap, List<PlaceMarkerUIModel> placeMarkerList) {
 
         // Add a marker in Map
         for (PlaceMarkerUIModel marker : placeMarkerList) {
@@ -223,11 +224,12 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
         }
 
         setInfoWindowAdapter(googleMap);
-
+        googleMap.setOnMarkerClickListener(new MyMarkerClickListener());
 
     }
 
     private void setInfoWindowAdapter(GoogleMap googleMap) {
+
         googleMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
 
             @Override
@@ -260,4 +262,5 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
             }
         });
     }
+
 }

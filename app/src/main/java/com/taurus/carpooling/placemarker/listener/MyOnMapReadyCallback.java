@@ -16,8 +16,8 @@ public abstract class MyOnMapReadyCallback implements OnMapReadyCallback {
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        this.onMapReadyShops(googleMap, placeMarkers);
+        this.onMapReadyMarkers(googleMap, placeMarkers);
     }
 
-    public abstract void onMapReadyShops(GoogleMap googleMap,List<PlaceMarkerUIModel> placeMarkers);
+    public abstract void onMapReadyMarkers(GoogleMap googleMap, List<PlaceMarkerUIModel> placeMarkers);
 }
