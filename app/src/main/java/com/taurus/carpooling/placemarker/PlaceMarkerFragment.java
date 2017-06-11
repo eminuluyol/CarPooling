@@ -47,13 +47,14 @@ import butterknife.OnClick;
 import static com.taurus.carpooling.R.id.map;
 
 public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMarkerPresenter>
-        implements PlaceMarkerView, SlidingUpPanelLayout.PanelSlideListener {
+        implements PlaceMarkerView, SlidingUpPanelLayout.PanelSlideListener, GoogleMap.OnInfoWindowCloseListener {
 
     private static final String EXTRA_PLACE_MARKER = "place_marker";
 
     private List<PlaceMarkerDatabaseModel> placeMarkers;
     private List<PlaceMarkerUIModel> placeMarkerUIList;
     private RecyclerAdapter placeMarkerAdapter;
+    private ArrayList<Marker> myMarkers;
 
     @BindView(R.id.placeMarkerRecyclerView)
     RecyclerView placeMarkerRecyclerView;
@@ -206,14 +207,17 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
 
     private void drawPlaceMarkersOnMap(GoogleMap googleMap, List<PlaceMarkerUIModel> placeMarkerList) {
 
+        myMarkers = new ArrayList<>();
+
         // Add a marker in Map
         for (PlaceMarkerUIModel marker : placeMarkerList) {
 
             LatLng place = new LatLng(marker.getLatitude(), marker.getLongitude());
-            googleMap.addMarker(new MarkerOptions().position(place)
+            myMarkers.add(googleMap.addMarker(new MarkerOptions().position(place)
                     .title(marker.getName())
                     .snippet(marker.getAddress())
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location)));
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location))));
+
         }
 
         // move the camera
@@ -224,7 +228,8 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
         }
 
         setInfoWindowAdapter(googleMap);
-        googleMap.setOnMarkerClickListener(new MyMarkerClickListener());
+        googleMap.setOnMarkerClickListener(new MyMarkerClickListener(myMarkers));
+        googleMap.setOnInfoWindowCloseListener(this);
 
     }
 
@@ -263,4 +268,10 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
         });
     }
 
+    @Override
+    public void onInfoWindowClose(Marker marker) {
+        for (Marker m : myMarkers) {
+            m.setVisible(true);
+        }
+    }
 }
