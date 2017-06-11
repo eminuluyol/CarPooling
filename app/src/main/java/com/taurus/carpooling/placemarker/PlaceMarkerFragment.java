@@ -1,8 +1,10 @@
 package com.taurus.carpooling.placemarker;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +12,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.NestedScrollView;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageButton;
@@ -19,7 +22,12 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -44,17 +52,28 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.OnClick;
 
-import static com.taurus.carpooling.R.id.map;
-
 public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMarkerPresenter>
-        implements PlaceMarkerView, SlidingUpPanelLayout.PanelSlideListener, GoogleMap.OnInfoWindowCloseListener {
+        implements PlaceMarkerView, SlidingUpPanelLayout.PanelSlideListener,
+        GoogleMap.OnInfoWindowCloseListener, GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
+    private static final String TAG = PlaceMarkerFragment.class.getSimpleName();
     private static final String EXTRA_PLACE_MARKER = "place_marker";
+
+    // Location updates intervals in sec
+    private static final int UPDATE_INTERVAL = 15000; // 10 sec
+    private static final int FATEST_INTERVAL = 5000; // 5 sec
+    private static final int DISPLACEMENT = 10; // 10 meters
 
     private List<PlaceMarkerDatabaseModel> placeMarkers;
     private List<PlaceMarkerUIModel> placeMarkerUIList;
-    private RecyclerAdapter placeMarkerAdapter;
-    private ArrayList<Marker> myMarkers;
+    private ArrayList<Marker> markerList;
+    private GoogleApiClient googleApiClient;
+    private GoogleMap mGoogleMap;
+    private Location lastLocation;
+    // boolean flag to toggle periodic location updates
+    private boolean requestingLocationUpdates = false;
+    private LocationRequest locationRequest;
 
     @BindView(R.id.placeMarkerRecyclerView)
     RecyclerView placeMarkerRecyclerView;
@@ -103,7 +122,7 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
             List<GenericItem> placeMarkerList = new ArrayList<>(PlaceMarkerUIModel.createList(placeMarkers));
 
             placeMarkerRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            placeMarkerAdapter = RecyclerAdapter.with(new PlaceMarkerAdapterDelegate());
+            RecyclerAdapter placeMarkerAdapter = RecyclerAdapter.with(new PlaceMarkerAdapterDelegate());
             placeMarkerRecyclerView.setAdapter(placeMarkerAdapter);
             placeMarkerAdapter.swapItems(placeMarkerList);
 
@@ -121,6 +140,67 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
         if (args == null) return;
         placeMarkers = args.getParcelableArrayList(PlaceMarkerFragment.EXTRA_PLACE_MARKER);
 
+        buildGoogleApiClient();
+        createLocationRequest();
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+
+        googleApiClient = new GoogleApiClient.Builder(getContext())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API).build();
+    }
+
+    protected void createLocationRequest() {
+
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(UPDATE_INTERVAL);
+        locationRequest.setFastestInterval(FATEST_INTERVAL);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setSmallestDisplacement(DISPLACEMENT);
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (googleApiClient != null) {
+            googleApiClient.connect();
+        }
+    }
+
+    private void startLocationUpdates() {
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(
+                googleApiClient, locationRequest, this);
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (googleApiClient.isConnected() && requestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        stopLocationUpdates();
+    }
+
+    protected void stopLocationUpdates() {
+
+        if(googleApiClient.isConnected()) {
+
+            LocationServices.FusedLocationApi.removeLocationUpdates(
+                    googleApiClient, this);
+
+            googleApiClient.disconnect();
+        }
     }
 
     @Override
@@ -138,10 +218,10 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
         YoYo.with(Techniques.BounceInUp)
                 .duration(850)
                 .playOn(view);
-        toogleMap();
+        toggleMap();
     }
 
-    private void toogleMap() {
+    private void toggleMap() {
 
         if (slidingLayout.getPanelState().equals(SlidingUpPanelLayout.PanelState.COLLAPSED)) {
             slidingLayout.setPanelState(SlidingUpPanelLayout.PanelState.ANCHORED);
@@ -152,22 +232,22 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
 
     @Override
     public void onPanelSlide(View panel, float slideOffset) {
-
+        //Nothing to do
     }
 
     @Override
     public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState,
                                     SlidingUpPanelLayout.PanelState newState) {
 
-        if(newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
+        if (newState == SlidingUpPanelLayout.PanelState.COLLAPSED) {
             buttonOpenMap.setImageResource(R.drawable.ic_map);
         }
 
-        if(newState == SlidingUpPanelLayout.PanelState.ANCHORED) {
+        if (newState == SlidingUpPanelLayout.PanelState.ANCHORED) {
             buttonOpenMap.setImageResource(R.drawable.ic_arrow_down);
         }
 
-        if(newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
+        if (newState == SlidingUpPanelLayout.PanelState.EXPANDED) {
             buttonOpenMap.setImageResource(R.drawable.ic_arrow_down);
         }
 
@@ -180,6 +260,7 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
         dialog.show();
 
     }
+
     @Override
     public void showGoogleServiceError() {
         Toast.makeText(getContext(), getResources().getString(R.string.google_maps_error), Toast.LENGTH_LONG).show();
@@ -189,16 +270,18 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
     public void showMap() {
 
         FragmentManager fm = getActivity().getSupportFragmentManager();
-        SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(map);
+        SupportMapFragment supportMapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
 
         if (supportMapFragment == null) {
             supportMapFragment = SupportMapFragment.newInstance();
-            fm.beginTransaction().replace(map, supportMapFragment).commit();
+            fm.beginTransaction().replace(R.id.map, supportMapFragment).commit();
         }
 
         supportMapFragment.getMapAsync(new MyOnMapReadyCallback(placeMarkerUIList) {
             @Override
             public void onMapReadyMarkers(GoogleMap googleMap, List<PlaceMarkerUIModel> placeMarkerList) {
+
+                mGoogleMap = googleMap;
                 drawPlaceMarkersOnMap(googleMap, placeMarkerList);
             }
         });
@@ -207,13 +290,13 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
 
     private void drawPlaceMarkersOnMap(GoogleMap googleMap, List<PlaceMarkerUIModel> placeMarkerList) {
 
-        myMarkers = new ArrayList<>();
+        markerList = new ArrayList<>();
 
         // Add a marker in Map
         for (PlaceMarkerUIModel marker : placeMarkerList) {
 
             LatLng place = new LatLng(marker.getLatitude(), marker.getLongitude());
-            myMarkers.add(googleMap.addMarker(new MarkerOptions().position(place)
+            markerList.add(googleMap.addMarker(new MarkerOptions().position(place)
                     .title(marker.getName())
                     .snippet(marker.getAddress())
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_car_location))));
@@ -228,7 +311,7 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
         }
 
         setInfoWindowAdapter(googleMap);
-        googleMap.setOnMarkerClickListener(new MyMarkerClickListener(myMarkers));
+        googleMap.setOnMarkerClickListener(new MyMarkerClickListener(markerList));
         googleMap.setOnInfoWindowCloseListener(this);
 
     }
@@ -255,7 +338,7 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
                 title.setText(marker.getTitle());
 
                 TextView snippet = new TextView(getContext());
-                int padding = (int)getContext().getResources().getDimension(R.dimen.space_small);
+                int padding = (int) getContext().getResources().getDimension(R.dimen.space_small);
                 snippet.setPadding(padding, 0, padding, 0);
                 snippet.setTextColor(Color.GRAY);
                 snippet.setText(marker.getSnippet());
@@ -270,8 +353,57 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
 
     @Override
     public void onInfoWindowClose(Marker marker) {
-        for (Marker m : myMarkers) {
+        for (Marker m : markerList) {
             m.setVisible(true);
         }
     }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        Log.i(TAG, "Connection failed: " + result.getErrorCode());
+    }
+
+    @Override
+    public void onConnected(Bundle arg0) {
+
+        // Once connected with google api, get the location
+        if(mGoogleMap != null) {
+            displayCurrentLocation(mGoogleMap);
+        }
+
+        if (requestingLocationUpdates) {
+            startLocationUpdates();
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int arg0) {
+        googleApiClient.connect();
+    }
+
+    private void displayCurrentLocation(GoogleMap googleMap) {
+
+        lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
+
+        if (lastLocation != null) {
+            double latitude = lastLocation.getLatitude();
+            double longitude = lastLocation.getLongitude();
+
+            LatLng place = new LatLng(latitude, longitude);
+            googleMap.addMarker(new MarkerOptions().position(place)
+                    .title("Current Location")
+                    .snippet(latitude + " " + longitude));
+
+        } else {
+            showError(getString(R.string.location_couldnt_find));
+        }
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+
+        lastLocation = location;
+        displayCurrentLocation(mGoogleMap);
+    }
+
 }
