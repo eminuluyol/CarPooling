@@ -2,7 +2,7 @@ package com.taurus.carpooling.placemarker.listener;
 
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.taurus.carpooling.placemarker.adapter.PlaceMarkerUIModel;
+import com.taurus.carpooling.placemarker.adapter.model.PlaceMarkerUIModel;
 
 import java.util.List;
 

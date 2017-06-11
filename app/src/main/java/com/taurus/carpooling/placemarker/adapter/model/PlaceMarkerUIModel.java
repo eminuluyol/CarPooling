@@ -1,4 +1,4 @@
-package com.taurus.carpooling.placemarker.adapter;
+package com.taurus.carpooling.placemarker.adapter.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

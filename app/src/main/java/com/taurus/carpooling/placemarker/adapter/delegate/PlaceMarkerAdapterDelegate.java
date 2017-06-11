@@ -1,4 +1,4 @@
-package com.taurus.carpooling.placemarker.adapter;
+package com.taurus.carpooling.placemarker.adapter.delegate;
 
 import android.support.annotation.NonNull;
 import android.view.ViewGroup;
@@ -6,6 +6,8 @@ import android.view.ViewGroup;
 import com.taurus.carpooling.R;
 import com.taurus.carpooling.baseadapter.BaseAdapterDelegate;
 import com.taurus.carpooling.baseadapter.model.GenericItem;
+import com.taurus.carpooling.placemarker.adapter.viewholder.PlaceMarkerViewHolder;
+import com.taurus.carpooling.placemarker.adapter.model.PlaceMarkerUIModel;
 
 import java.util.List;
 

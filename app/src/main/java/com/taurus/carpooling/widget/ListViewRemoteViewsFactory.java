@@ -13,7 +13,7 @@ import com.taurus.carpooling.baseadapter.model.GenericItem;
 import com.taurus.carpooling.network.CarPoolingApi;
 import com.taurus.carpooling.network.model.BaseRequest;
 import com.taurus.carpooling.network.retrofit.RetrofitCarPoolingApi;
-import com.taurus.carpooling.placemarker.adapter.PlaceMarkerUIModel;
+import com.taurus.carpooling.placemarker.adapter.model.PlaceMarkerUIModel;
 import com.taurus.carpooling.repository.model.PlaceMarkerDatabaseModel;
 import com.taurus.carpooling.util.SharedPreferenceHelper;
 

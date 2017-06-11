@@ -1,4 +1,4 @@
-package com.taurus.carpooling.placemarker.adapter;
+package com.taurus.carpooling.placemarker.adapter.viewholder;
 
 import android.support.annotation.NonNull;
 import android.view.ViewGroup;
@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.taurus.carpooling.R;
 import com.taurus.carpooling.baseadapter.viewholder.BaseViewHolder;
+import com.taurus.carpooling.placemarker.adapter.model.PlaceMarkerUIModel;
 
 import butterknife.BindView;
 
