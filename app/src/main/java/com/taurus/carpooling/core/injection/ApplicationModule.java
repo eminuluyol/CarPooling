@@ -4,6 +4,7 @@ import android.app.Application;
 
 import com.taurus.carpooling.network.retrofit.RetrofitCarPoolingApi;
 import com.taurus.carpooling.repository.CarPoolingDatabaseHandler;
+import com.taurus.carpooling.util.SharedPreferenceHelper;
 
 import javax.inject.Singleton;
 
@@ -35,6 +36,12 @@ public class ApplicationModule {
     @Singleton
     public CarPoolingDatabaseHandler provideCarPoolingDatabaseHandler() {
         return new CarPoolingDatabaseHandler(application);
+    }
+
+    @Provides
+    @Singleton
+    public SharedPreferenceHelper provideSharedPreferenceHelper() {
+        return new SharedPreferenceHelper(application);
     }
 
 }
