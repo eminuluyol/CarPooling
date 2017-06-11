@@ -51,7 +51,13 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.OnClick;
+import permissions.dispatcher.NeedsPermission;
+import permissions.dispatcher.OnNeverAskAgain;
+import permissions.dispatcher.OnPermissionDenied;
+import permissions.dispatcher.RuntimePermissions;
 
+
+@RuntimePermissions
 public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMarkerPresenter>
         implements PlaceMarkerView, SlidingUpPanelLayout.PanelSlideListener,
         GoogleMap.OnInfoWindowCloseListener, GoogleApiClient.ConnectionCallbacks,
@@ -142,6 +148,30 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
 
         buildGoogleApiClient();
         createLocationRequest();
+
+        PlaceMarkerFragmentPermissionsDispatcher.askPermissionsWithCheck(this);
+        PlaceMarkerFragmentPermissionsDispatcher.askPermissionsForCurrentLocationWithCheck(this);
+
+    }
+
+    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
+    void askPermissions() {
+        startLocationUpdates();
+    }
+
+    @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
+    void askPermissionsForCurrentLocation() {
+        displayCurrentLocation(mGoogleMap);
+    }
+
+    @OnPermissionDenied({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
+    public void showDeniedPermission() {
+        showError(getContext().getResources().getString(R.string.permission_denied));
+    }
+
+    @OnNeverAskAgain({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
+    public void showNeverAskAgain() {
+        Toast.makeText(getContext(), R.string.permission_never_task, Toast.LENGTH_SHORT).show();
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -182,7 +212,7 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
         super.onResume();
 
         if (googleApiClient.isConnected() && requestingLocationUpdates) {
-            startLocationUpdates();
+            askPermissions();
         }
     }
 
@@ -368,11 +398,11 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
 
         // Once connected with google api, get the location
         if(mGoogleMap != null) {
-            displayCurrentLocation(mGoogleMap);
+            askPermissionsForCurrentLocation();
         }
 
         if (requestingLocationUpdates) {
-            startLocationUpdates();
+            askPermissions();
         }
     }
 
@@ -403,7 +433,14 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
     public void onLocationChanged(Location location) {
 
         lastLocation = location;
-        displayCurrentLocation(mGoogleMap);
+        askPermissionsForCurrentLocation();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        // NOTE: delegate the permission handling to generated method
+        PlaceMarkerFragmentPermissionsDispatcher.onRequestPermissionsResult(this, requestCode, grantResults);
     }
 
 }
