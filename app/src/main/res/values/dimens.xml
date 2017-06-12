@@ -9,5 +9,7 @@
     <dimen name="space_xxlarge">56dp</dimen>
 
     <dimen name="list_card_elevation">4dp</dimen>
+    <dimen name="button_map_image_size">50dp</dimen>
+    <dimen name="space_edit_text">12dp</dimen>
 
 </resources>

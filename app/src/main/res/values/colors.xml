@@ -18,6 +18,7 @@
     <color name="soft_red">#EC6262</color>
     <color name="aqua_haze">#EBF2F3</color>
     <color name="transparent">#00000000</color>
+    <color name="circle_button_map_color">#F34235</color>
 
 </resources>
 
