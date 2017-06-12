@@ -154,6 +154,24 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
 
     }
 
+    protected synchronized void buildGoogleApiClient() {
+
+        googleApiClient = new GoogleApiClient.Builder(getContext())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API).build();
+    }
+
+    protected void createLocationRequest() {
+
+        locationRequest = new LocationRequest();
+        locationRequest.setInterval(UPDATE_INTERVAL);
+        locationRequest.setFastestInterval(FATEST_INTERVAL);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setSmallestDisplacement(DISPLACEMENT);
+
+    }
+
     @NeedsPermission({Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION})
     void askPermissions() {
         startLocationUpdates();
@@ -174,24 +192,6 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
         Toast.makeText(getContext(), R.string.permission_never_task, Toast.LENGTH_SHORT).show();
     }
 
-    protected synchronized void buildGoogleApiClient() {
-
-        googleApiClient = new GoogleApiClient.Builder(getContext())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API).build();
-    }
-
-    protected void createLocationRequest() {
-
-        locationRequest = new LocationRequest();
-        locationRequest.setInterval(UPDATE_INTERVAL);
-        locationRequest.setFastestInterval(FATEST_INTERVAL);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        locationRequest.setSmallestDisplacement(DISPLACEMENT);
-
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -201,6 +201,9 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
     }
 
     private void startLocationUpdates() {
+
+        if (!googleApiClient.isConnected())
+            return;
 
         LocationServices.FusedLocationApi.requestLocationUpdates(
                 googleApiClient, locationRequest, this);
@@ -224,7 +227,7 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
 
     protected void stopLocationUpdates() {
 
-        if(googleApiClient.isConnected()) {
+        if (googleApiClient.isConnected()) {
 
             LocationServices.FusedLocationApi.removeLocationUpdates(
                     googleApiClient, this);
@@ -397,7 +400,7 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
     public void onConnected(Bundle arg0) {
 
         // Once connected with google api, get the location
-        if(mGoogleMap != null) {
+        if (mGoogleMap != null) {
             askPermissionsForCurrentLocation();
         }
 
@@ -412,6 +415,9 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
     }
 
     private void displayCurrentLocation(GoogleMap googleMap) {
+
+        if (!googleApiClient.isConnected())
+            return;
 
         lastLocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient);
 

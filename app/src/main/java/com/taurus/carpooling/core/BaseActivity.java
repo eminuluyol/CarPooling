@@ -82,8 +82,6 @@ public abstract class BaseActivity<V extends BaseView, P extends BasePresenter<V
 
         if (Build.VERSION.SDK_INT >= 25) {
             createShortcut();
-        }else{
-            removeShortcut();
         }
 
     }
@@ -318,13 +316,6 @@ public abstract class BaseActivity<V extends BaseView, P extends BasePresenter<V
                 .build();
 
         shortcutManager.setDynamicShortcuts(Arrays.asList(shortcut));
-    }
-
-    @TargetApi(25)
-    private void removeShortcut() {
-        ShortcutManager shortcutManager = getSystemService(ShortcutManager.class);
-        shortcutManager.disableShortcuts(Arrays.asList(SHORTCUT_ID));
-        shortcutManager.removeAllDynamicShortcuts();
     }
 
 }
