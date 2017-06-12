@@ -19,5 +19,6 @@
     <string name="location_couldnt_find">Couldn\'t get the location. Make sure location is enabled on the device</string>
     <string name="permission_denied">Permission has been denied</string>
     <string name="permission_never_task">Permission has been denied. If you want to Activate them you must do it manually from your phone Settings.</string>
+    <string name="current_location">Current Location</string>
 
 </resources>

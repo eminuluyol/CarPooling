@@ -427,7 +427,7 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
 
             LatLng place = new LatLng(latitude, longitude);
             googleMap.addMarker(new MarkerOptions().position(place)
-                    .title("Current Location")
+                    .title(getString(R.string.current_location))
                     .snippet(latitude + " " + longitude));
 
         } else {
