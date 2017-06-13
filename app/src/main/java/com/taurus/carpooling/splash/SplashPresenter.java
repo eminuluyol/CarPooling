@@ -77,6 +77,12 @@ public class SplashPresenter extends BasePresenter<SplashView> {
 
         if(placeMarkers.size() > 0) {
             getNavigator().toPlaceMarkerActivity(placeMarkers).clearBackStack().navigate();
+        } else {
+
+            if(isViewAttached()) {
+                getView().showError(throwable.getMessage());
+            }
+
         }
 
     }
