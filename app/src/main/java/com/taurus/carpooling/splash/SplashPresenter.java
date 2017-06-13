@@ -73,6 +73,17 @@ public class SplashPresenter extends BasePresenter<SplashView> {
     private void handleError(Throwable throwable) {
 
         onProgressBarHide();
+        List<PlaceMarkerDatabaseModel> placeMarkers = getDatabaseHandler().getAllPlaceMarkers();
+
+        if(placeMarkers.size() > 0) {
+            getNavigator().toPlaceMarkerActivity(placeMarkers).clearBackStack().navigate();
+        } else {
+
+            if(isViewAttached()) {
+                getView().showError(throwable.getMessage());
+            }
+
+        }
 
     }
 
