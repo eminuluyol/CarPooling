@@ -1,4 +1,4 @@
-package com.taurus.carpooling.repository;
+package com.taurus.carpooling.util;
 
 import android.content.ContentValues;
 import android.content.Context;
@@ -6,6 +6,8 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
+import com.taurus.carpooling.repository.PlaceMarker;
 
 import java.util.ArrayList;
 import java.util.List;

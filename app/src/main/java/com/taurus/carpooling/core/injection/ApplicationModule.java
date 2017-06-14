@@ -3,7 +3,7 @@ package com.taurus.carpooling.core.injection;
 import android.app.Application;
 
 import com.taurus.carpooling.network.retrofit.RetrofitCarPoolingApi;
-import com.taurus.carpooling.repository.CarPoolingDatabaseHandler;
+import com.taurus.carpooling.util.CarPoolingDatabaseHandler;
 import com.taurus.carpooling.repository.PlaceMarkerRepository;
 import com.taurus.carpooling.repository.local.PlaceMarkerLocalDataSource;
 import com.taurus.carpooling.repository.remote.PlaceMarkerRemoteDataSource;
