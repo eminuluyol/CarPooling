@@ -1,4 +1,4 @@
-package com.taurus.carpooling.repository.model;
+package com.taurus.carpooling.repository;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,7 +9,7 @@ import com.taurus.carpooling.util.ListConverter;
 
 import java.util.List;
 
-public class PlaceMarkerDatabaseModel implements Parcelable {
+public class PlaceMarker implements Parcelable {
 
     private String address;
 
@@ -29,10 +29,10 @@ public class PlaceMarkerDatabaseModel implements Parcelable {
 
     private String vin;
 
-    public PlaceMarkerDatabaseModel() {
+    public PlaceMarker() {
     }
 
-    protected PlaceMarkerDatabaseModel(Parcel in) {
+    protected PlaceMarker(Parcel in) {
         address = in.readString();
         longitude = in.readString();
         latitude = in.readString();
@@ -44,15 +44,15 @@ public class PlaceMarkerDatabaseModel implements Parcelable {
         vin = in.readString();
     }
 
-    public static final Creator<PlaceMarkerDatabaseModel> CREATOR = new Creator<PlaceMarkerDatabaseModel>() {
+    public static final Creator<PlaceMarker> CREATOR = new Creator<PlaceMarker>() {
         @Override
-        public PlaceMarkerDatabaseModel createFromParcel(Parcel in) {
-            return new PlaceMarkerDatabaseModel(in);
+        public PlaceMarker createFromParcel(Parcel in) {
+            return new PlaceMarker(in);
         }
 
         @Override
-        public PlaceMarkerDatabaseModel[] newArray(int size) {
-            return new PlaceMarkerDatabaseModel[size];
+        public PlaceMarker[] newArray(int size) {
+            return new PlaceMarker[size];
         }
     };
 
@@ -128,13 +128,13 @@ public class PlaceMarkerDatabaseModel implements Parcelable {
         this.vin = vin;
     }
 
-    public static List<PlaceMarkerDatabaseModel> createList(PlaceMarksWrapper placeMarksWrappers) {
+    public static List<PlaceMarker> createList(PlaceMarksWrapper placeMarksWrappers) {
         return ListConverter.convert(placeMarksWrappers.getPlacemarks(), item -> create(item));
     }
 
-    private static PlaceMarkerDatabaseModel create(Placemark item) {
+    private static PlaceMarker create(Placemark item) {
 
-        final PlaceMarkerDatabaseModel model = new PlaceMarkerDatabaseModel();
+        final PlaceMarker model = new PlaceMarker();
 
         model.setAddress(item.getAddress());
         model.setLongitude(String.valueOf(item.getCoordinates().get(0)));

@@ -4,7 +4,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.taurus.carpooling.baseadapter.model.GenericItem;
-import com.taurus.carpooling.repository.model.PlaceMarkerDatabaseModel;
+import com.taurus.carpooling.repository.PlaceMarker;
 import com.taurus.carpooling.util.ListConverter;
 
 import java.util.List;
@@ -145,11 +145,11 @@ public class PlaceMarkerUIModel extends GenericItem implements Parcelable{
     }
 
 
-    public static List<PlaceMarkerUIModel> createList(List<PlaceMarkerDatabaseModel> placeMarkers) {
+    public static List<PlaceMarkerUIModel> createList(List<PlaceMarker> placeMarkers) {
         return ListConverter.convert(placeMarkers, item -> create(item));
     }
 
-    private static PlaceMarkerUIModel create(PlaceMarkerDatabaseModel item) {
+    private static PlaceMarkerUIModel create(PlaceMarker item) {
 
         final PlaceMarkerUIModel model = new PlaceMarkerUIModel();
 

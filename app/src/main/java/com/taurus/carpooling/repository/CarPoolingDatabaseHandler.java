@@ -7,8 +7,6 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.taurus.carpooling.repository.model.PlaceMarkerDatabaseModel;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -72,7 +70,7 @@ public class CarPoolingDatabaseHandler extends SQLiteOpenHelper {
     }
 
 
-    public void addPlaceMarker(PlaceMarkerDatabaseModel placeMarker) {
+    public void addPlaceMarker(PlaceMarker placeMarker) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -93,7 +91,7 @@ public class CarPoolingDatabaseHandler extends SQLiteOpenHelper {
 
     }
 
-    public List<PlaceMarkerDatabaseModel> addAllPlaceMarkers(List<PlaceMarkerDatabaseModel> placeMarkers) {
+    public List<PlaceMarker> addAllPlaceMarkers(List<PlaceMarker> placeMarkers) {
 
         if (getPlaceMarkerCount() == 0) {
 
@@ -110,7 +108,7 @@ public class CarPoolingDatabaseHandler extends SQLiteOpenHelper {
 
     }
 
-    private void addAllItems(List<PlaceMarkerDatabaseModel> placeMarkers) {
+    private void addAllItems(List<PlaceMarker> placeMarkers) {
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -136,9 +134,9 @@ public class CarPoolingDatabaseHandler extends SQLiteOpenHelper {
 
     }
 
-    public List<PlaceMarkerDatabaseModel> getAllPlaceMarkers() {
+    public List<PlaceMarker> getAllPlaceMarkers() {
 
-        List<PlaceMarkerDatabaseModel> placeMarkers = new ArrayList<>();
+        List<PlaceMarker> placeMarkers = new ArrayList<>();
 
         String selectQuery = "SELECT  * FROM " + TABLE_PLACE_MARKERS;
 
@@ -150,7 +148,7 @@ public class CarPoolingDatabaseHandler extends SQLiteOpenHelper {
 
             do {
 
-                PlaceMarkerDatabaseModel placeMarker = new PlaceMarkerDatabaseModel();
+                PlaceMarker placeMarker = new PlaceMarker();
 
                 placeMarker.setAddress(cursor.getString(0));
                 placeMarker.setLongitude(cursor.getString(1));

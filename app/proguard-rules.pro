@@ -246,6 +246,7 @@ public <init>(android.content.Context, android.util.AttributeSet, int);
 
 -keep class com.taurus.carpooling.repository.model.** { *; }
 -keep class com.taurus.carpooling.placemarker.adapter.model.** { *; }
+-keep class com.taurus.carpooling.repository.model.** { *; }
 
 #Fragment args
 -keep class com.hannesdorfmann.fragmentargs.** { *; }

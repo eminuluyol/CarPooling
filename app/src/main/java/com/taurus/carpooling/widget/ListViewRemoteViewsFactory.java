@@ -14,7 +14,7 @@ import com.taurus.carpooling.network.CarPoolingApi;
 import com.taurus.carpooling.network.model.BaseRequest;
 import com.taurus.carpooling.network.retrofit.RetrofitCarPoolingApi;
 import com.taurus.carpooling.placemarker.adapter.model.PlaceMarkerUIModel;
-import com.taurus.carpooling.repository.model.PlaceMarkerDatabaseModel;
+import com.taurus.carpooling.repository.PlaceMarker;
 import com.taurus.carpooling.util.SharedPreferenceHelper;
 
 import java.text.SimpleDateFormat;
@@ -67,7 +67,7 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
                 api.getCarFeeds(request)
                         .subscribeOn(Schedulers.newThread())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .map(PlaceMarkerDatabaseModel::createList)
+                        .map(PlaceMarker::createList)
                         .subscribe(this::handleResponse, this::handleError);
 
             }
@@ -76,7 +76,7 @@ public class ListViewRemoteViewsFactory implements RemoteViewsService.RemoteView
 
     }
 
-    private void handleResponse(List<PlaceMarkerDatabaseModel> data) {
+    private void handleResponse(List<PlaceMarker> data) {
 
 
         if (data != null && !data.isEmpty()) {

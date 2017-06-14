@@ -19,6 +19,7 @@ allprojects {
         jcenter()
         mavenCentral()
         maven { url "https://jitpack.io" }
+        maven { url 'https://maven.google.com' }
     }
 }
 
@@ -30,6 +31,7 @@ ext {
     supportLibVersion = "25.3.1"
     firebaseVersion = "10.0.1"
     ankoVersion = "0.10.0"
+    archVersion = '1.0.0-alpha1'
 
     versionCode = 1
     versionName = "1.0.0"
