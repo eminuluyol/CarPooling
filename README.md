@@ -17,4 +17,17 @@ With the app, you can:
 ![ScreenShot](http://i66.tinypic.com/30u8zcz.png)
 ![ScreenShot](http://i63.tinypic.com/rsc4g6.png)
 
+## Libraries
+
+* [Retrofit](http://square.github.io/retrofit/)
+* [RxJava](https://github.com/ReactiveX/RxJava)
+* [Butterknife](http://jakewharton.github.io/butterknife/)
+* [Dagger2](https://google.github.io/dagger/)
+* [Retrolambda](https://github.com/orfjackal/retrolambda)
+* [Mosby](https://github.com/sockeqwe/mosby)
+* [FragmentArgs](https://github.com/sockeqwe/fragmentargs)
+* [Adapter Delegate](https://github.com/sockeqwe/AdapterDelegates)
+* [Android View Animations](https://github.com/daimajia/)
+* [Android Sliding Up Panel](https://github.com/umano/AndroidSlidingUpPanel)
+
 
