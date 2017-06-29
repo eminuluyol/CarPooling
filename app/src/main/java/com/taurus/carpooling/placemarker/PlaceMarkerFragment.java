@@ -44,7 +44,7 @@ import com.taurus.carpooling.placemarker.adapter.delegate.PlaceMarkerAdapterDele
 import com.taurus.carpooling.placemarker.adapter.model.PlaceMarkerUIModel;
 import com.taurus.carpooling.placemarker.listener.MyMarkerClickListener;
 import com.taurus.carpooling.placemarker.listener.MyOnMapReadyCallback;
-import com.taurus.carpooling.repository.model.PlaceMarkerDatabaseModel;
+import com.taurus.carpooling.repository.PlaceMarker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,7 +71,7 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
     private static final int FATEST_INTERVAL = 5000; // 5 sec
     private static final int DISPLACEMENT = 10; // 10 meters
 
-    private List<PlaceMarkerDatabaseModel> placeMarkers;
+    private List<PlaceMarker> placeMarkers;
     private List<PlaceMarkerUIModel> placeMarkerUIList;
     private ArrayList<Marker> markerList;
     private GoogleApiClient googleApiClient;
@@ -93,10 +93,10 @@ public class PlaceMarkerFragment extends BaseFragment<PlaceMarkerView, PlaceMark
     @BindView(R.id.sliding_layout)
     SlidingUpPanelLayout slidingLayout;
 
-    public static PlaceMarkerFragment newInstance(List<PlaceMarkerDatabaseModel> placeMarkers) {
+    public static PlaceMarkerFragment newInstance(List<PlaceMarker> placeMarkers) {
 
         Bundle args = new Bundle();
-        args.putParcelableArrayList(PlaceMarkerFragment.EXTRA_PLACE_MARKER, (ArrayList<PlaceMarkerDatabaseModel>) placeMarkers);
+        args.putParcelableArrayList(PlaceMarkerFragment.EXTRA_PLACE_MARKER, (ArrayList<PlaceMarker>) placeMarkers);
 
         PlaceMarkerFragment fragment = new PlaceMarkerFragment();
         fragment.setArguments(args);

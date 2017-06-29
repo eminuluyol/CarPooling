@@ -4,7 +4,8 @@ import android.app.Application;
 
 import com.hannesdorfmann.mosby.mvp.MvpBasePresenter;
 import com.taurus.carpooling.network.retrofit.RetrofitCarPoolingApi;
-import com.taurus.carpooling.repository.CarPoolingDatabaseHandler;
+import com.taurus.carpooling.util.CarPoolingDatabaseHandler;
+import com.taurus.carpooling.repository.PlaceMarkerRepository;
 import com.taurus.carpooling.util.SharedPreferenceHelper;
 import com.taurus.carpooling.util.navigator.Navigator;
 
@@ -28,6 +29,9 @@ public abstract class BasePresenter<V extends BaseView> extends MvpBasePresenter
 
     @Inject
     SharedPreferenceHelper sharedPreference;
+
+    @Inject
+    PlaceMarkerRepository placeMarkerRepository;
 
     protected CompositeDisposable compositeDisposable;
 
@@ -53,6 +57,10 @@ public abstract class BasePresenter<V extends BaseView> extends MvpBasePresenter
 
     public SharedPreferenceHelper getSharedPreferenceHelper() {
         return sharedPreference;
+    }
+
+    public PlaceMarkerRepository getPlaceMarkerRepository() {
+        return placeMarkerRepository;
     }
 
     public void clearCompositeDisposable() {

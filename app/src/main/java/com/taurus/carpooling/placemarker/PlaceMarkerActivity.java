@@ -8,7 +8,7 @@ import android.support.annotation.Nullable;
 import com.taurus.carpooling.R;
 import com.taurus.carpooling.core.BaseFragment;
 import com.taurus.carpooling.core.BaseSimpleActivity;
-import com.taurus.carpooling.repository.model.PlaceMarkerDatabaseModel;
+import com.taurus.carpooling.repository.PlaceMarker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +17,9 @@ public class PlaceMarkerActivity extends BaseSimpleActivity {
 
     private static final String EXTRA_PLACE_MARKER = "place_marker";
 
-    private  List<PlaceMarkerDatabaseModel> placeMarkers;
+    private  List<PlaceMarker> placeMarkers;
 
-    public static Intent newIntent(Context context, List<PlaceMarkerDatabaseModel> placeMarkers) {
+    public static Intent newIntent(Context context, List<PlaceMarker> placeMarkers) {
 
         Intent intent = new Intent(context, PlaceMarkerActivity.class);
         intent.putParcelableArrayListExtra(PlaceMarkerActivity.EXTRA_PLACE_MARKER, new ArrayList<>(placeMarkers));

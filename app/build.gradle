@@ -65,6 +65,16 @@ dependencies {
     compile "com.android.support:animated-vector-drawable:$rootProject.supportLibVersion"
     compile "com.android.support:customtabs:$rootProject.supportLibVersion"
 
+    // Lifecycle arch
+    compile "android.arch.lifecycle:runtime:$rootProject.archVersion"
+    compile "android.arch.lifecycle:extensions:$rootProject.archVersion"
+    annotationProcessor "android.arch.lifecycle:compiler:$rootProject.archVersion"
+
+    // Room arch
+    compile "android.arch.persistence.room:runtime:$rootProject.archVersion"
+    annotationProcessor "android.arch.persistence.room:compiler:$rootProject.archVersion"
+    compile "android.arch.persistence.room:rxjava2:$rootProject.archVersion"
+
     compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 

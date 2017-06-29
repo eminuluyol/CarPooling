@@ -4,7 +4,7 @@ import android.app.Activity;
 
 import com.taurus.carpooling.core.injection.ActivityScope;
 import com.taurus.carpooling.placemarker.PlaceMarkerActivity;
-import com.taurus.carpooling.repository.model.PlaceMarkerDatabaseModel;
+import com.taurus.carpooling.repository.PlaceMarker;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ public class Navigator {
         this.activity = activity;
     }
 
-    public Navigation toPlaceMarkerActivity(List<PlaceMarkerDatabaseModel> placeMarkers) {
+    public Navigation toPlaceMarkerActivity(List<PlaceMarker> placeMarkers) {
         return new Navigation(activity, PlaceMarkerActivity.newIntent(activity, placeMarkers));
     }
 }
