@@ -14,7 +14,7 @@ With the app, you can:
 ## Screens
 ![ScreenShot](http://i65.tinypic.com/np3odi.png)
 ![ScreenShot](http://i66.tinypic.com/28s7ehk.png)
-![ScreenShot](http://i66.tinypic.com/30u8zcz.png
+![ScreenShot](http://i66.tinypic.com/30u8zcz.png)
 ![ScreenShot](http://i63.tinypic.com/rsc4g6.png)
 
 
